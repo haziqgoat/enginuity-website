@@ -1,0 +1,91 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+// Server-side Supabase client with service role key
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+)
+
+// Verify user authentication and role
+async function verifyUserRole(authToken: string, requiredRoles: string[] = ['staff', 'admin']) {
+  try {
+    // Import the regular Supabase client dynamically
+    const { createClient: createRegularClient } = await import('@supabase/supabase-js')
+    
+    const supabaseRegular = createRegularClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    
+    const { data: { user }, error } = await supabaseRegular.auth.getUser(authToken)
+    
+    if (error || !user) {
+      return { success: false, error: 'Invalid authentication token' }
+    }
+
+    const userRole = user.user_metadata?.role
+    if (!userRole || !requiredRoles.includes(userRole)) {
+      return { success: false, error: 'Insufficient permissions' }
+    }
+
+    return { success: true, user, role: userRole }
+  } catch (error) {
+    return { success: false, error: 'Authentication verification failed' }
+  }
+}
+
+// GET /api/job-applications/count - Get count of pending applications (staff/admin only)
+export async function GET(request: NextRequest) {
+  try {
+    const authHeader = request.headers.get('authorization')
+    const authToken = authHeader?.replace('Bearer ', '')
+
+    if (!authToken) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    // Verify user has required role
+    const authResult = await verifyUserRole(authToken)
+    if (!authResult.success) {
+      return NextResponse.json(
+        { success: false, error: authResult.error },
+        { status: 403 }
+      )
+    }
+
+    // Count pending applications
+    const { count, error } = await supabaseAdmin
+      .from('job_applications')
+      .select('*', { count: 'exact', head: true })
+      .eq('application_status', 'pending')
+
+    if (error) {
+      console.error('Database error:', error)
+      return NextResponse.json(
+        { success: false, error: 'Failed to count job applications' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      count: count || 0
+    })
+  } catch (error) {
+    console.error('Unexpected error:', error)
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

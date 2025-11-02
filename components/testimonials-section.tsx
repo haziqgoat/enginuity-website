@@ -30,30 +30,29 @@ export function TestimonialsSection() {
   ]
 
   return (
-    <section className="py-20 bg-muted">
+    <section className="py-16 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-card-foreground mb-6">What Our Clients Say</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
-            Hear from construction professionals who have experienced the benefits of using HNZ Consult for their
-            projects.
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-slate-900 mb-4">Client Testimonials</h2>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            Trusted by construction professionals across Malaysia.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="h-full">
-              <CardContent className="p-8">
-                <div className="flex items-center mb-4">
+            <Card key={index} className="h-full bg-white border border-slate-200 shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-3">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-accent text-accent" />
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <blockquote className="text-muted-foreground mb-6 text-pretty">"{testimonial.content}"</blockquote>
-                <div className="border-t pt-4">
-                  <div className="font-semibold text-card-foreground">{testimonial.name}</div>
-                  <div className="text-sm text-muted-foreground">{testimonial.position}</div>
-                  <div className="text-sm text-accent font-medium">{testimonial.company}</div>
+                <blockquote className="text-slate-600 mb-4 text-sm leading-relaxed">"{testimonial.content}"</blockquote>
+                <div className="border-t border-slate-100 pt-4">
+                  <div className="font-semibold text-slate-900 text-sm">{testimonial.name}</div>
+                  <div className="text-xs text-slate-500">{testimonial.position}</div>
+                  <div className="text-xs text-blue-600 font-medium">{testimonial.company}</div>
                 </div>
               </CardContent>
             </Card>

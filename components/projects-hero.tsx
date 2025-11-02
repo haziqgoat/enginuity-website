@@ -1,41 +1,72 @@
+import Link from "next/link"
 import { Building2, MapPin, Calendar } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export function ProjectsHero() {
+  // Project statistics data
+  const projectStats = [
+    {
+      icon: Building2,
+      value: "150+",
+      label: "Completed Projects",
+      bgColor: "bg-blue-600"
+    },
+    {
+      icon: MapPin,
+      value: "25+",
+      label: "Cities Covered",
+      bgColor: "bg-blue-600"
+    },
+    {
+      icon: Calendar,
+      value: "98%",
+      label: "On-Time Delivery",
+      bgColor: "bg-blue-600"
+    }
+  ]
+
   return (
-    <section className="bg-muted py-16">
+    <section className="bg-gradient-to-br from-slate-50 to-slate-100 py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl lg:text-5xl font-bold text-card-foreground mb-6 text-balance">
+        <div className="text-center mb-16">
+          {/* Main Header */}
+          <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
             Our Project Portfolio
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 text-pretty">
-            Explore our successful construction projects managed through the Enginuity platform. From residential
-            complexes to commercial developments, see how we deliver excellence.
+          
+          {/* Description */}
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-8">
+            Delivering excellence in construction and engineering across Malaysia.
+            From residential complexes to industrial facilities.
           </p>
-        </div>
-
-        {/* Project Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-card rounded-lg p-8 text-center">
-            <div className="flex items-center justify-center w-16 h-16 bg-primary rounded-full mx-auto mb-4">
-              <Building2 className="h-8 w-8 text-primary-foreground" />
-            </div>
-            <div className="text-3xl font-bold text-card-foreground mb-2">150+</div>
-            <div className="text-muted-foreground">Completed Projects</div>
+          
+          {/* Project Statistics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {projectStats.map((stat, index) => (
+              <div 
+                key={index} 
+                className="bg-white rounded-lg p-6 text-center shadow-sm border border-slate-200"
+              >
+                <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg mx-auto mb-4">
+                  <stat.icon className="h-6 w-6 text-white" />
+                </div>
+                <div className="text-2xl font-bold text-slate-900 mb-1">{stat.value}</div>
+                <div className="text-slate-600 text-sm">{stat.label}</div>
+              </div>
+            ))}
           </div>
-          <div className="bg-card rounded-lg p-8 text-center">
-            <div className="flex items-center justify-center w-16 h-16 bg-accent rounded-full mx-auto mb-4">
-              <MapPin className="h-8 w-8 text-accent-foreground" />
-            </div>
-            <div className="text-3xl font-bold text-card-foreground mb-2">25+</div>
-            <div className="text-muted-foreground">Cities Covered</div>
-          </div>
-          <div className="bg-card rounded-lg p-8 text-center">
-            <div className="flex items-center justify-center w-16 h-16 bg-primary rounded-full mx-auto mb-4">
-              <Calendar className="h-8 w-8 text-primary-foreground" />
-            </div>
-            <div className="text-3xl font-bold text-card-foreground mb-2">98%</div>
-            <div className="text-muted-foreground">On-Time Delivery</div>
+          
+          {/* Cost Planner CTA */}
+          <div className="pt-8 bg-gradient-to-r from-blue-50 to-orange-50 p-6 rounded-xl border border-blue-100 shadow-sm max-w-2xl mx-auto">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Estimate Your Project Costs</h3>
+            <p className="text-gray-600 mb-4 text-sm">
+              Get an instant cost estimate for your engineering project with our AI-powered cost planner.
+            </p>
+            <Link href="/cost-planner">
+              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 text-sm">
+                Try Our Cost Estimator Tool
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

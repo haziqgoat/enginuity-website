@@ -3,135 +3,73 @@
 import { useState } from "react"
 import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
+import { useProjects } from "@/hooks/use-projects"
+import { RoleGuard } from "@/components/role-guard"
+import { UserRole } from "@/lib/roles"
+import { AddEditProjectForm } from "@/components/add-project-form"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Plus, Loader2 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export function ProjectsGrid() {
   const [filter, setFilter] = useState("all")
+  const [showAddForm, setShowAddForm] = useState(false)
+  const { projects, loading, error, refetch } = useProjects()
 
-  const projects = [
-    {
-      title: "Skyline Residential Complex",
-      description:
-        "A modern 25-story residential complex with 200 units, featuring sustainable design and smart home technology.",
-      location: "Kuala Lumpur, Malaysia",
-      duration: "24 months",
-      budget: "RM 85M",
-      teamSize: 45,
-      status: "completed" as const,
-      category: "Residential",
-      imageUrl: "/modern-residential-complex-building.jpg",
-      features: [
-        "Smart home automation systems",
-        "Green building certification",
-        "Underground parking facility",
-        "Rooftop garden and amenities",
-      ],
-    },
-    {
-      title: "Metro Shopping Center",
-      description: "Large-scale commercial development with retail spaces, entertainment zones, and office towers.",
-      location: "Johor Bahru, Malaysia",
-      duration: "30 months",
-      budget: "RM 120M",
-      teamSize: 60,
-      status: "ongoing" as const,
-      category: "Commercial",
-      imageUrl: "/modern-shopping-center-mall-construction.jpg",
-      features: [
-        "Multi-level retail spaces",
-        "IMAX cinema complex",
-        "Food court and restaurants",
-        "Office tower integration",
-      ],
-    },
-    {
-      title: "Industrial Manufacturing Hub",
-      description: "State-of-the-art manufacturing facility with automated systems and sustainable energy solutions.",
-      location: "Penang, Malaysia",
-      duration: "18 months",
-      budget: "RM 65M",
-      teamSize: 35,
-      status: "completed" as const,
-      category: "Industrial",
-      imageUrl: "/modern-manufacturing-facility.png",
-      features: [
-        "Automated production lines",
-        "Solar energy systems",
-        "Waste management facility",
-        "Quality control laboratories",
-      ],
-    },
-    {
-      title: "Heritage Hotel Restoration",
-      description:
-        "Careful restoration of a colonial-era building into a luxury boutique hotel while preserving historical elements.",
-      location: "George Town, Penang",
-      duration: "15 months",
-      budget: "RM 35M",
-      teamSize: 25,
-      status: "completed" as const,
-      category: "Heritage",
-      imageUrl: "/heritage-colonial-building-hotel-restoration.jpg",
-      features: [
-        "Historical facade preservation",
-        "Modern interior amenities",
-        "Boutique hotel suites",
-        "Cultural heritage compliance",
-      ],
-    },
-    {
-      title: "Smart Office Tower",
-      description:
-        "Next-generation office building with AI-powered building management and sustainable design features.",
-      location: "Cyberjaya, Malaysia",
-      duration: "28 months",
-      budget: "RM 95M",
-      teamSize: 50,
-      status: "ongoing" as const,
-      category: "Commercial",
-      imageUrl: "/modern-smart-office-tower-building.jpg",
-      features: [
-        "AI building management",
-        "Energy-efficient systems",
-        "Flexible workspace design",
-        "High-speed connectivity",
-      ],
-    },
-    {
-      title: "Waterfront Condominiums",
-      description: "Luxury waterfront residential development with marina access and premium amenities.",
-      location: "Putrajaya, Malaysia",
-      duration: "22 months",
-      budget: "RM 75M",
-      teamSize: 40,
-      status: "planning" as const,
-      category: "Residential",
-      imageUrl: "/luxury-waterfront-condominium-marina.jpg",
-      features: ["Marina and boat access", "Infinity pool and spa", "Waterfront dining", "Private beach access"],
-    },
-  ]
-
-  const categories = ["all", "Residential", "Commercial", "Industrial", "Heritage"]
+  const categories = ["all", "Residential", "Commercial", "Industrial", "Heritage", "Mixed-Use", "Infrastructure"]
 
   const filteredProjects = filter === "all" ? projects : projects.filter((project) => project.category === filter)
 
+  const handleFormSuccess = () => {
+    setShowAddForm(false)
+    refetch()
+  }
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <span className="ml-2 text-slate-600">Loading projects...</span>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Alert variant="destructive">
+            <AlertDescription>
+              Error loading projects: {error}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </section>
+    )
+  }
+
   return (
-    <section className="py-20 bg-background">
+    <section className="py-12 md:py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-card-foreground mb-6">Featured Projects</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 text-pretty">
-            Discover how Enginuity has helped deliver successful construction projects across various sectors and
-            scales.
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3 md:mb-4">Featured Projects</h2>
+          <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto mb-6 md:mb-8">
+            Discover our successful construction projects across various sectors.
           </p>
 
           {/* Filter Buttons */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
+          <div className="flex flex-wrap justify-center gap-1.5 md:gap-2">
             {categories.map((category) => (
               <Button
                 key={category}
                 variant={filter === category ? "default" : "outline"}
                 onClick={() => setFilter(category)}
-                className="capitalize"
+                className="capitalize px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm"
+                size="sm"
               >
                 {category === "all" ? "All Projects" : category}
               </Button>
@@ -139,19 +77,44 @@ export function ProjectsGrid() {
           </div>
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project, index) => (
-            <ProjectCard key={index} {...project} />
-          ))}
-        </div>
+        {/* Add Project Button - Top Right Below Filters */}
+        <RoleGuard requiredRole={UserRole.STAFF} showUnauthorized={false}>
+          <div className="flex justify-end mb-4 md:mb-6">
+            <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
+              <DialogTrigger asChild>
+                <Button className="text-xs md:text-sm py-2 px-3 md:py-2 md:px-4">
+                  <Plus className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                  Add Project
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Add New Project</DialogTitle>
+                </DialogHeader>
+                <AddEditProjectForm
+                  onSuccess={handleFormSuccess}
+                  onCancel={() => setShowAddForm(false)}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
+        </RoleGuard>
 
-        {/* Load More Button */}
-        <div className="text-center mt-12">
-          <Button variant="outline" size="lg">
-            Load More Projects
-          </Button>
-        </div>
+        {/* Projects Grid */}
+        {filteredProjects.length === 0 ? (
+          <div className="text-center py-8 md:py-12">
+            <p className="text-slate-500 text-base md:text-lg">No projects found.</p>
+            <RoleGuard requiredRole={UserRole.STAFF} showUnauthorized={false}>
+              <p className="text-xs md:text-sm text-slate-400 mt-2">Be the first to add a project!</p>
+            </RoleGuard>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {filteredProjects.map((project) => (
+              <ProjectCard key={project.id} {...project} onUpdate={refetch} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

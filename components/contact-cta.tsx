@@ -9,7 +9,7 @@ export function ContactCTA() {
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-card-foreground mb-6">Ready to Get Started?</h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
-            Choose the best way to connect with our team and discover how Enginuity can transform your construction
+            Choose the best way to connect with our team and discover how this platform can transform your construction
             projects.
           </p>
         </div>
@@ -22,7 +22,7 @@ export function ContactCTA() {
               </div>
               <h3 className="text-xl font-bold text-card-foreground mb-4">Schedule a Demo</h3>
               <p className="text-muted-foreground mb-6 text-pretty">
-                Book a personalized demo to see how Enginuity can streamline your construction projects.
+                Book a personalized demo to see how HNZ Consult can streamline your construction projects.
               </p>
               <Button className="w-full">Book Demo</Button>
             </CardContent>
@@ -38,7 +38,7 @@ export function ContactCTA() {
                 Speak directly with our experts to discuss your specific requirements and get immediate answers.
               </p>
               <Button variant="secondary" className="w-full">
-                +60 3-2161 8888
+                +60 3-5541 2054
               </Button>
             </CardContent>
           </Card>

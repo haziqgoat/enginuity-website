@@ -5,10 +5,9 @@ export function AboutHero() {
     <section className="bg-muted py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl lg:text-5xl font-bold text-card-foreground mb-6 text-balance">About Enginuity</h1>
+          <h1 className="text-4xl lg:text-5xl font-bold text-card-foreground mb-6 text-balance">About Us</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 text-pretty">
-            Revolutionizing construction project management through innovative technology solutions, developed in
-            collaboration with HNZ Consult Sdn. Bhd.
+            Revolutionizing construction project management through innovative technology solutions and expert.
           </p>
         </div>
 

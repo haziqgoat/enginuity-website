@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabaseClient"
+import { DEFAULT_ROLE } from "@/lib/roles"
 
 // Supabase's user type
 import type { User } from "@supabase/supabase-js"
@@ -26,13 +27,17 @@ export const auth = {
     return { success: true, user: data.user }
   },
 
-  // Signup with email + password (+ optional metadata)
+  // Signup with email + password (+ optional metadata) and default role
   signup: async (email: string, password: string, name: string, company?: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { name, company },
+        data: { 
+          name, 
+          company,
+          role: DEFAULT_ROLE // New users get client role by default
+        },
       },
     })
 

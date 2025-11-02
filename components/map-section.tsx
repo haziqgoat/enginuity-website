@@ -5,7 +5,7 @@ export function MapSection() {
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-card-foreground mb-6">Visit Our Office</h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
-            Located in the heart of Kuala Lumpur, our office is easily accessible by public transport and offers
+            Located in Shah Alam, our office is accessible by public transport and offers
             convenient parking facilities.
           </p>
         </div>
@@ -32,17 +32,23 @@ export function MapSection() {
               </div>
               <h3 className="text-xl font-semibold text-card-foreground mb-2">Interactive Map</h3>
               <p className="text-muted-foreground mb-4">
-                Level 15, Menara HNZ, Jalan Ampang
+                96, Jalan Pelabur A 23/A, Seksyen 23, 
                 <br />
-                50450 Kuala Lumpur, Malaysia
+                40300 Shah Alam, Selangor
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                  Get Directions
-                </button>
-                <button className="px-6 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors">
+                {/* Google Maps URLs use the `api=1` query format. Encode the address for safety. */}
+                
+
+                <a
+                  className="px-6 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors inline-flex items-center justify-center"
+                  href="https://maps.app.goo.gl/FLZMATj5KJQ4aq5f9"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label="View our office location on Google Maps"
+                >
                   View on Google Maps
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -53,19 +59,19 @@ export function MapSection() {
           <div className="text-center">
             <h4 className="font-semibold text-card-foreground mb-2">Public Transport</h4>
             <p className="text-muted-foreground text-sm text-pretty">
-              5-minute walk from Ampang Park LRT Station. Multiple bus routes available nearby.
+              10-minute walk from SA425 Seksyen 23 (Barat) bus stop. Multiple bus routes available nearby.
             </p>
           </div>
           <div className="text-center">
             <h4 className="font-semibold text-card-foreground mb-2">Parking</h4>
             <p className="text-muted-foreground text-sm text-pretty">
-              Covered parking available in the building. Visitor parking spaces reserved on lower levels.
+              Convenient roadside parking is available near our building at Jalan Pelabur A 23/A, Seksyen 23, Shah Alam.
             </p>
           </div>
           <div className="text-center">
             <h4 className="font-semibold text-card-foreground mb-2">Nearby Landmarks</h4>
             <p className="text-muted-foreground text-sm text-pretty">
-              Close to KLCC, Suria KLCC, and major business districts in Kuala Lumpur.
+              Close to Shah Alam Stadium and i-City Shah Alam, making it easy to find us.
             </p>
           </div>
         </div>

@@ -10,15 +10,18 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Upload, X } from "lucide-react"
+import { useJobApplications, JobApplicationInput } from "@/hooks/use-job-applications"
 
 interface ApplicationFormProps {
   jobTitle: string
+  jobId: number // Add job ID prop
   onClose: () => void
 }
 
-export function ApplicationForm({ jobTitle, onClose }: ApplicationFormProps) {
+export function ApplicationForm({ jobTitle, jobId, onClose }: ApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const { submitApplication } = useJobApplications()
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -31,15 +34,56 @@ export function ApplicationForm({ jobTitle, onClose }: ApplicationFormProps) {
     resume: null as File | null,
   })
 
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Reset errors
+    setErrors({})
+    
+    // Validate form
+    const newErrors: Record<string, string> = {}
+    
+    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required"
+    if (!formData.email.trim()) newErrors.email = "Email is required"
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required"
+    if (!formData.university.trim()) newErrors.university = "University is required"
+    if (!formData.degree.trim()) newErrors.degree = "Degree is required"
+    if (!formData.graduationYear) newErrors.graduationYear = "Graduation year is required"
+    if (!formData.experience) newErrors.experience = "Experience level is required"
+    if (!formData.resume) newErrors.resume = "Resume is required"
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+    
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const applicationData: JobApplicationInput = {
+        job_opening_id: jobId,
+        applicant_name: formData.fullName,
+        applicant_email: formData.email,
+        phone: formData.phone,
+        university: formData.university,
+        degree: formData.degree,
+        graduation_year: formData.graduationYear,
+        experience_level: formData.experience,
+        cover_letter: formData.coverLetter || undefined,
+        resume: formData.resume!
+      }
 
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+      const success = await submitApplication(applicationData)
+      if (success) {
+        setIsSubmitted(true)
+      }
+    } catch (error) {
+      console.error('Application submission error:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,7 +96,7 @@ export function ApplicationForm({ jobTitle, onClose }: ApplicationFormProps) {
   if (isSubmitted) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md mx-4">
           <CardHeader className="text-center">
             <CardTitle className="text-green-600">Application Submitted!</CardTitle>
             <CardDescription>
@@ -71,8 +115,9 @@ export function ApplicationForm({ jobTitle, onClose }: ApplicationFormProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-      <Card className="w-full max-w-2xl my-8">
+    <div className="fixed inset-0 bg-black/50 flex items-start justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+      <div className="w-full flex justify-center min-h-full py-4 sm:py-8">
+        <Card className="w-full max-w-2xl max-h-[calc(100vh-2rem)] sm:max-h-[90vh] overflow-y-auto">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
@@ -94,7 +139,9 @@ export function ApplicationForm({ jobTitle, onClose }: ApplicationFormProps) {
                   required
                   value={formData.fullName}
                   onChange={(e) => setFormData((prev) => ({ ...prev, fullName: e.target.value }))}
+                  className={errors.fullName ? "border-red-500" : ""}
                 />
+                {errors.fullName && <p className="text-sm text-red-500 mt-1">{errors.fullName}</p>}
               </div>
               <div>
                 <Label htmlFor="email">Email *</Label>
@@ -104,7 +151,9 @@ export function ApplicationForm({ jobTitle, onClose }: ApplicationFormProps) {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                  className={errors.email ? "border-red-500" : ""}
                 />
+                {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
               </div>
             </div>
 
@@ -174,7 +223,9 @@ export function ApplicationForm({ jobTitle, onClose }: ApplicationFormProps) {
             <div>
               <Label htmlFor="resume">Resume/CV *</Label>
               <div className="mt-2">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-muted-foreground/25 rounded-lg cursor-pointer hover:bg-muted/50">
+                <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 ${
+                  errors.resume ? 'border-red-500' : 'border-muted-foreground/25'
+                }`}>
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <Upload className="w-8 h-8 mb-4 text-muted-foreground" />
                     <p className="mb-2 text-sm text-muted-foreground">
@@ -184,6 +235,7 @@ export function ApplicationForm({ jobTitle, onClose }: ApplicationFormProps) {
                   </div>
                   <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={handleFileChange} required />
                 </label>
+                {errors.resume && <p className="text-sm text-red-500 mt-1">{errors.resume}</p>}
               </div>
             </div>
 
@@ -209,6 +261,7 @@ export function ApplicationForm({ jobTitle, onClose }: ApplicationFormProps) {
           </form>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }

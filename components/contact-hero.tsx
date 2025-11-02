@@ -7,7 +7,7 @@ export function ContactHero() {
         <div className="text-center mb-12">
           <h1 className="text-4xl lg:text-5xl font-bold text-card-foreground mb-6 text-balance">Get In Touch</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 text-pretty">
-            Ready to transform your construction projects? Contact us today to learn how Enginuity can help streamline
+            Ready to transform your construction projects? Contact us today to learn how HNZ Consult can help streamline
             your operations and improve project outcomes.
           </p>
         </div>
