@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -136,11 +139,7 @@
 }
 
 /* Firefox scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
-}
-
+/* Removed the global * selector that was causing all elements to have borders */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: var(--color-scrollbar-thumb) rgba(255, 255, 255, 0.1);

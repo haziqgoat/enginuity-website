@@ -117,7 +117,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* Removed the border-border and outline-ring/50 that was causing all elements to have borders */
   }
   body {
     @apply bg-background text-foreground;

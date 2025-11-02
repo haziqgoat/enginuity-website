@@ -1,28 +1,5 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/_next/static/(.*)",
-      "headers": { "cache-control": "public,max-age=31536000,immutable" },
-      "dest": "/_next/static/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/"
-    }
-  ],
-  "build": {
-    "env": {
-      "NEXT_OPTIMIZE_CSS": "true"
-    }
-  },
-  "buildCommand": "npm run build",
+  "buildCommand": "pnpm build",
   "outputDirectory": ".next",
   "framework": "nextjs"
 }
