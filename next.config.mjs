@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -12,7 +13,6 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
   },
-  // Add output tracing for better debugging
   output: 'standalone',
 }
 
