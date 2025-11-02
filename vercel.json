@@ -16,5 +16,13 @@
       "src": "/(.*)",
       "dest": "/"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NEXT_OPTIMIZE_CSS": "true"
+    }
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs"
 }
