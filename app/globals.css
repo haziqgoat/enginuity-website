@@ -137,7 +137,8 @@
 /* Mobile-specific fixes */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* Removed border-border which was causing issues */
+    @apply outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
