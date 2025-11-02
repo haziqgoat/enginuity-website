@@ -12,8 +12,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Building2, Lock, ArrowRight, CheckCircle } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { validatePassword } from "@/lib/password-validation"
+import { LoadingBoundary } from "@/components/loading-boundary"
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -245,5 +246,13 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <LoadingBoundary>
+      <ResetPasswordContent />
+    </LoadingBoundary>
   )
 }

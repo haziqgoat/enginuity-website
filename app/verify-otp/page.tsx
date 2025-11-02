@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Building2, Mail, ArrowRight, CheckCircle, Shield, RotateCw } from "lucide-react"
+import { LoadingBoundary } from "@/components/loading-boundary"
 
-export default function VerifyOTPPage() {
+function VerifyOTPContent() {
   const [email, setEmail] = useState("")
   const [otp, setOtp] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -250,5 +251,13 @@ export default function VerifyOTPPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function VerifyOTPPage() {
+  return (
+    <LoadingBoundary>
+      <VerifyOTPContent />
+    </LoadingBoundary>
   )
 }

@@ -11,8 +11,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Building2, Mail, Lock, ArrowRight, CheckCircle, Shield } from "lucide-react"
 import { validatePassword } from "@/lib/password-validation"
+import { LoadingBoundary } from "@/components/loading-boundary"
 
-export default function VerifyCodePage() {
+function VerifyCodeContent() {
   const [email, setEmail] = useState("")
   const [token, setToken] = useState("")
   const [password, setPassword] = useState("")
@@ -420,5 +421,13 @@ export default function VerifyCodePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function VerifyCodePage() {
+  return (
+    <LoadingBoundary>
+      <VerifyCodeContent />
+    </LoadingBoundary>
   )
 }
