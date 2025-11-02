@@ -39,8 +39,24 @@ export default function SignupPage() {
   const { signup } = useAuth()
   const router = useRouter()
   
-  // reCAPTCHA configuration
-  const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // Test key
+  // reCAPTCHA configuration - removed test key fallback
+  const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""
+
+  // Check if reCAPTCHA is properly configured
+  if (!RECAPTCHA_SITE_KEY) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-orange-50/30 to-amber-50/40 flex items-center justify-center">
+        <Card className="max-w-md mx-4">
+          <CardHeader>
+            <CardTitle>Configuration Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-600">reCAPTCHA is not properly configured. Please contact the site administrator.</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
