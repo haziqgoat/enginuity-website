@@ -248,3 +248,10 @@
     @apply text-xl;
   }
 }
+
+/* Ensure Tailwind base styles are applied */
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}

@@ -11,5 +11,10 @@
       "src": "/(.*)",
       "dest": "/"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NEXT_OPTIMIZE_CSS": "true"
+    }
+  }
 }

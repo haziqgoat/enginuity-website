@@ -12,6 +12,8 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
   },
+  // Add output tracing for better debugging
+  output: 'standalone',
 }
 
 export default nextConfig
