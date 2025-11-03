@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabaseClient'
 
-// POST /api/generate-otp - Generate and send OTP via email
+// POST /api/generate-otp - Generate and send OTP via email for password reset
 export async function POST(request: Request) {
   try {
     const { email } = await request.json()
@@ -11,6 +11,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: 'Email is required' },
         { status: 400 }
+      )
+    }
+
+    // Check if Supabase is configured
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Supabase is not configured properly' },
+        { status: 500 }
       )
     }
 
@@ -27,14 +35,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true })
     }
 
-    // Send OTP via email using Supabase's signInWithOtp function
-    // This will send a 6-digit code to the user's email
-    const { error: emailError } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: false,
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'http://localhost:3000'}/verify-otp?email=${encodeURIComponent(email)}`,
-      }
+    // Send OTP via email using Supabase's resetPasswordForEmail function
+    // This will send a 6-digit OTP code to the user's email for password reset
+    const { error: emailError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'http://localhost:3000'}/verify-otp?email=${encodeURIComponent(email)}`,
     })
 
     if (emailError) {

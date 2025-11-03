@@ -131,13 +131,13 @@ function VerifyCodeContent() {
     }
 
     try {
-      // Update the password
+      // Update the password (token no longer needed as it was verified in the previous step)
       const response = await fetch('/api/reset-password', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, token, newPassword: password }),
+        body: JSON.stringify({ email, newPassword: password }), // Removed token from request
       })
 
       const result = await response.json()

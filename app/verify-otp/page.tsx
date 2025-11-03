@@ -60,7 +60,7 @@ function VerifyOTPContent() {
     }
 
     try {
-      // Verify the OTP
+      // Verify the OTP using the dedicated verification endpoint
       const response = await fetch('/api/verify-otp', {
         method: 'POST',
         headers: {
@@ -91,8 +91,8 @@ function VerifyOTPContent() {
     setError("")
 
     try {
-      // Call the API to generate and send a new OTP
-      const response = await fetch('/api/generate-otp', {
+      // Call the reset-password API to send a new OTP
+      const response = await fetch('/api/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -132,10 +132,10 @@ function VerifyOTPContent() {
                 </div>
               </div>
               <CardTitle className="text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-700 to-slate-600 bg-clip-text text-transparent mb-2">
-                Verify Your Email
+                Password Reset Verification
               </CardTitle>
               <CardDescription className="text-slate-600 text-base">
-                Enter the 6-digit code sent to your email
+                Enter the 6-digit code sent to your email to reset your password
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
@@ -186,7 +186,7 @@ function VerifyOTPContent() {
                     />
                   </div>
                   <p className="text-xs text-slate-500 text-center">
-                    Enter the 6-digit code sent to <strong>{email}</strong>
+                    Enter the 6-digit code sent to <strong>{email}</strong> to reset your password
                   </p>
                 </div>
 
@@ -209,29 +209,22 @@ function VerifyOTPContent() {
                     )}
                   </Button>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleResendCode}
-                    disabled={isLoading || !canResend}
-                    className="w-full h-12 border-slate-300 text-slate-700 font-medium transition-all duration-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending...
-                      </>
-                    ) : canResend ? (
-                      <>
-                        <RotateCw className="mr-2 h-4 w-4" />
-                        Resend Code
-                      </>
-                    ) : (
-                      <>
-                        Resend Code in {resendTimer}s
-                      </>
-                    )}
-                  </Button>
+                  {resendTimer > 0 ? (
+                    <p className="text-sm text-slate-500">
+                      Resend code in {resendTimer} seconds
+                    </p>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={handleResendCode}
+                      disabled={isLoading}
+                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <RotateCw className="h-4 w-4 mr-2" />
+                      Resend Code
+                    </Button>
+                  )}
                 </div>
               </form>
 

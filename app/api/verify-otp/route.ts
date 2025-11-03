@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabaseClient'
 
-// POST /api/verify-otp - Verify OTP code
+// POST /api/verify-otp - Verify OTP code for password reset
 export async function POST(request: Request) {
   try {
     const { email, token } = await request.json()
@@ -14,11 +14,19 @@ export async function POST(request: Request) {
       )
     }
 
-    // Verify OTP using Supabase's verifyOtp function
+    // Check if Supabase is configured
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Supabase is not configured properly' },
+        { status: 500 }
+      )
+    }
+
+    // Verify OTP using Supabase's verifyOtp function with 'recovery' type for password reset
     const { error: verifyError } = await supabase.auth.verifyOtp({
       email,
       token,
-      type: 'email' // For email OTP verification
+      type: 'recovery' // For password recovery
     })
 
     if (verifyError) {

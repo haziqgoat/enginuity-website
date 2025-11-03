@@ -100,8 +100,8 @@ export default function LoginPage() {
     }
 
     try {
-      // Call the API to generate and send OTP
-      const response = await fetch('/api/generate-otp', {
+      // Call the API to send password reset email with OTP
+      const response = await fetch('/api/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,8 +162,8 @@ export default function LoginPage() {
                         <div className="space-y-2">
                           <div className="font-medium">Password Reset Email Sent!</div>
                           <div>
-                            We've sent a password reset link to <strong>{forgotPasswordEmail}</strong>.
-                            Please check your email and follow the instructions to reset your password.
+                            We've sent a password reset email to <strong>{forgotPasswordEmail}</strong>.
+                            Please check your email and click the link to reset your password.
                           </div>
                           <div className="text-sm text-green-700 mt-2">
                             Didn't receive the email? Check your spam folder.
@@ -208,11 +208,11 @@ export default function LoginPage() {
                         {isLoading ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Sending Reset Link...
+                            Sending Reset Email...
                           </>
                         ) : (
                           <>
-                            Send Reset Link
+                            Send Reset Email
                             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                           </>
                         )}

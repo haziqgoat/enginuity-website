@@ -76,9 +76,22 @@ function ResetPasswordContent() {
     }
 
     try {
-      const result = await updatePassword(password)
+      // Call the API to update the password
+      const response = await fetch('/api/reset-password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email, 
+          token: '', // Empty token since we're already verified in the URL
+          newPassword: password 
+        }),
+      })
 
-      if (result.success) {
+      const result = await response.json()
+      
+      if (response.ok && result.success) {
         setSuccess(true)
         // Redirect to login after 3 seconds
         setTimeout(() => {
@@ -120,10 +133,10 @@ function ResetPasswordContent() {
                 </div>
               </div>
               <CardTitle className="text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-700 to-slate-600 bg-clip-text text-transparent mb-2">
-                Reset Password
+                Create New Password
               </CardTitle>
               <CardDescription className="text-slate-600 text-base">
-                Create a new password for your account
+                Enter a new password for your account
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
