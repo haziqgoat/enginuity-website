@@ -93,8 +93,8 @@ export function ProjectCard({
   }
 
   return (
-    <Card className={`overflow-hidden transition-all duration-300 border border-slate-200 bg-white h-full flex flex-col gap-0 py-0 ${
-      isExpanded ? 'shadow-xl scale-[1.02]' : 'hover:shadow-lg hover:scale-[1.01]'
+    <Card className={`bg-card text-card-foreground flex flex-col gap-6 rounded-xl border pt-0 pb-6 shadow-sm overflow-hidden transition-all duration-300 relative group ${
+      isExpanded ? 'shadow-xl scale-[1.02]' : 'hover:shadow-lg hover:scale-[1.01] hover:-translate-y-1'
     }`}>
       {/* Project Image */}
       <div className="h-40 md:h-48 bg-slate-100 relative overflow-hidden flex-shrink-0">
@@ -119,7 +119,7 @@ export function ProjectCard({
           
           {/* Admin Controls in Header */}
           <RoleGuard requiredRole={UserRole.STAFF} showUnauthorized={false}>
-            <div className="flex gap-1 flex-shrink-0">
+            <div className="flex gap-1 flex-shrink-0 sm:opacity-100 sm:translate-y-0 md:opacity-0 md:group-hover:opacity-100 md:translate-y-2 md:group-hover:translate-y-0">
               <Dialog open={showEditForm} onOpenChange={setShowEditForm}>
                 <DialogTrigger asChild>
                   <Button size="sm" variant="outline" className="h-6 w-6 p-0 md:h-7 md:w-7">

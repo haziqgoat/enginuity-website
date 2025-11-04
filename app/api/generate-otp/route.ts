@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     // Send OTP via email using Supabase's resetPasswordForEmail function
     // This will send a 6-digit OTP code to the user's email for password reset
     const { error: emailError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'http://localhost:3000'}/verify-otp?email=${encodeURIComponent(email)}`,
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'https://enginuity-website.vercel.app'}/verify-otp?email=${encodeURIComponent(email)}`,
     })
 
     if (emailError) {

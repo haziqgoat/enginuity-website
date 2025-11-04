@@ -16,9 +16,10 @@ interface TeamMemberFormProps {
   onSave: (teamMember: Omit<TeamMember, 'id'> | Partial<TeamMember>) => Promise<void>
   onCancel: () => void
   isEditing?: boolean
+  hideImageFields?: boolean
 }
 
-export function TeamMemberForm({ teamMember, onSave, onCancel, isEditing = false }: TeamMemberFormProps) {
+export function TeamMemberForm({ teamMember, onSave, onCancel, isEditing = false, hideImageFields = false }: TeamMemberFormProps) {
   const [formData, setFormData] = useState<Omit<TeamMember, 'id'> | Partial<TeamMember>>({
     name: teamMember?.name || '',
     position: teamMember?.position || '',
@@ -44,6 +45,11 @@ export function TeamMemberForm({ teamMember, onSave, onCancel, isEditing = false
   const uploadTeamMemberImage = async (file: File): Promise<string> => {
     try {
       setUploadingImage(true)
+      
+      // Check if Supabase is configured
+      if (!supabase) {
+        throw new Error('Supabase is not properly configured')
+      }
       
       // Get current user session
       const { data: { session }, error: authError } = await supabase.auth.getSession()
@@ -122,7 +128,7 @@ export function TeamMemberForm({ teamMember, onSave, onCancel, isEditing = false
       let finalImageUrl = formData.image_url
       
       // Handle image upload if a file is selected
-      if (imageMode === 'upload' && selectedFile) {
+      if (imageMode === 'upload' && selectedFile && !hideImageFields) {
         try {
           finalImageUrl = await uploadTeamMemberImage(selectedFile)
         } catch (error) {
@@ -138,7 +144,7 @@ export function TeamMemberForm({ teamMember, onSave, onCancel, isEditing = false
       // Update form data with final image URL
       const finalData = {
         ...formData,
-        image_url: finalImageUrl || undefined
+        image_url: hideImageFields ? undefined : (finalImageUrl || undefined)
       }
       
       await onSave(finalData)
@@ -211,86 +217,88 @@ export function TeamMemberForm({ teamMember, onSave, onCancel, isEditing = false
             />
           </div>
           
-          {/* Image Section */}
-          <div className="space-y-4">
-            <label className="text-sm font-medium">Profile Image</label>
-            
-            <Tabs value={imageMode} onValueChange={(value) => setImageMode(value as 'url' | 'upload')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="url" className="flex items-center gap-2">
-                  <Link className="h-4 w-4" />
-                  Image URL
-                </TabsTrigger>
-                <TabsTrigger value="upload" className="flex items-center gap-2">
-                  <Upload className="h-4 w-4" />
-                  Upload Image
-                </TabsTrigger>
-              </TabsList>
+          {/* Image Section - Hidden when hideImageFields is true */}
+          {!hideImageFields && (
+            <div className="space-y-4">
+              <label className="text-sm font-medium">Profile Image</label>
               
-              <TabsContent value="url" className="space-y-2">
-                <Input
-                  id="image_url"
-                  name="image_url"
-                  value={formData.image_url || ''}
-                  onChange={handleChange}
-                  placeholder="Enter image URL"
-                />
-              </TabsContent>
-              
-              <TabsContent value="upload" className="space-y-2">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        {selectedFile ? (
-                          <>
-                            <ImageIcon className="w-8 h-8 mb-2 text-green-500" />
-                            <p className="text-sm text-gray-600 font-medium">{selectedFile.name}</p>
-                            <p className="text-xs text-gray-500">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                            <p className="mb-2 text-sm text-gray-500">
-                              <span className="font-semibold">Click to upload</span> or drag and drop
-                            </p>
-                            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                          </>
-                        )}
+              <Tabs value={imageMode} onValueChange={(value) => setImageMode(value as 'url' | 'upload')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="url" className="flex items-center gap-2">
+                    <Link className="h-4 w-4" />
+                    Image URL
+                  </TabsTrigger>
+                  <TabsTrigger value="upload" className="flex items-center gap-2">
+                    <Upload className="h-4 w-4" />
+                    Upload Image
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="url" className="space-y-2">
+                  <Input
+                    id="image_url"
+                    name="image_url"
+                    value={formData.image_url || ''}
+                    onChange={handleChange}
+                    placeholder="Enter image URL"
+                  />
+                </TabsContent>
+                
+                <TabsContent value="upload" className="space-y-2">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-center w-full">
+                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          {selectedFile ? (
+                            <>
+                              <ImageIcon className="w-8 h-8 mb-2 text-green-500" />
+                              <p className="text-sm text-gray-600 font-medium">{selectedFile.name}</p>
+                              <p className="text-xs text-gray-500">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                              <p className="mb-2 text-sm text-gray-500">
+                                <span className="font-semibold">Click to upload</span> or drag and drop
+                              </p>
+                              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                            </>
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                        />
+                      </label>
+                    </div>
+                    
+                    {selectedFile && (
+                      <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <span className="text-sm text-green-700">Image ready for upload</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedFile(null)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
                       </div>
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                      />
-                    </label>
+                    )}
+                    
+                    {uploadingImage && (
+                      <div className="flex items-center gap-2 text-sm text-blue-600">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Uploading image...
+                      </div>
+                    )}
                   </div>
-                  
-                  {selectedFile && (
-                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                      <span className="text-sm text-green-700">Image ready for upload</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedFile(null)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                  
-                  {uploadingImage && (
-                    <div className="flex items-center gap-2 text-sm text-blue-600">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Uploading image...
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          )}
           
           <div className="space-y-2">
             <label htmlFor="linkedin_url" className="text-sm font-medium">LinkedIn URL</label>

@@ -111,6 +111,7 @@ export function TeamSection() {
                         setEditingMember(null)
                       }}
                       isEditing={!!editingMember}
+                      hideImageFields={true}
                     />
                   </DialogContent>
                 </Dialog>
@@ -122,7 +123,7 @@ export function TeamSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {teamMembers.map((member) => (
             <div key={member.id} className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border pt-0 pb-6 shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 relative group">
-              <div className="absolute top-2 right-2 flex gap-1 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+              <div className="absolute top-2 right-2 flex gap-1 z-10 sm:opacity-100 sm:translate-y-0 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 md:opacity-0 md:group-hover:opacity-100 md:translate-y-2 md:group-hover:translate-y-0">
                 {canEdit && (
                   <>
                     <Dialog open={showForm && editingMember?.id === member.id} onOpenChange={(open) => {
@@ -154,6 +155,7 @@ export function TeamSection() {
                             setEditingMember(null)
                           }}
                           isEditing={true}
+                          hideImageFields={true}
                         />
                       </DialogContent>
                     </Dialog>
@@ -168,23 +170,12 @@ export function TeamSection() {
                   </>
                 )}
               </div>
-              <div className="h-[400px] bg-muted flex items-center justify-center">
-                <img
-                  src={member.image_url || "/placeholder.svg"}
-                  alt={member.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = "/placeholder.svg"
-                  }}
-                />
-              </div>
               <CardContent className="p-3 flex-1">
                 <h3 className="text-base font-bold text-card-foreground mb-0.5">{member.name}</h3>
                 <p className="text-accent font-medium text-xs mb-0.5">{member.position}</p>
                 <p className="text-[0.65rem] text-muted-foreground mb-2">{member.company}</p>
                 <p className="text-[0.65rem] text-muted-foreground line-clamp-2">{member.bio}</p>
-                <div className="flex space-x-2 mt-3">
+                <div className="flex justify-center space-x-2 mt-3">
                   {member.linkedin_url && (
                     <a 
                       href={member.linkedin_url} 

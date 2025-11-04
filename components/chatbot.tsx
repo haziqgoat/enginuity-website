@@ -11,7 +11,7 @@ import {
   Loader2,
   AlertCircle
 } from "lucide-react"
-import { AuthRequired } from "@/components/auth-required" // Added import
+// Removed AuthRequired import
 
 type Message = {
   id: string
@@ -43,11 +43,8 @@ const suggestedQuestions = [
 ]
 
 export function ChatBot() {
-  return (
-    <AuthRequired>
-      <ChatBotContent />
-    </AuthRequired>
-  )
+  // Removed AuthRequired wrapper to allow public access
+  return <ChatBotContent />
 }
 
 function ChatBotContent() {

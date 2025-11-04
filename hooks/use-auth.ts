@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { supabase } from "@/lib/supabaseClient"
+import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient"
 import { UserRole, DEFAULT_ROLE, hasRole, hasPermission } from "@/lib/roles"
 import type { UserWithRole } from "@/lib/roles"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
 export function useAuth() {
   const [user, setUser] = useState<UserWithRole | null>(null)
@@ -23,39 +24,81 @@ export function useAuth() {
   }
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession()
-      const sessionUser = data.session?.user
-
-      if (sessionUser) {
-        setUser(normalizeUser(sessionUser))
-        setIsAuthenticated(true)
-      }
+    // If Supabase isn't configured, set loading to false and return
+    if (!isSupabaseConfigured || !supabase) {
       setIsLoading(false)
+      return
+    }
+
+    // Type guard to ensure supabase is not null
+    const supabaseClient = supabase as NonNullable<SupabaseClient>
+
+    let isMounted = true;
+    
+    const getSession = async () => {
+      try {
+        const { data } = await supabaseClient.auth.getSession()
+        const sessionUser = data.session?.user
+
+        if (isMounted) {
+          if (sessionUser) {
+            setUser(normalizeUser(sessionUser))
+            setIsAuthenticated(true)
+          } else {
+            setUser(null)
+            setIsAuthenticated(false)
+          }
+          setIsLoading(false)
+        }
+      } catch (error) {
+        console.error('Error getting session:', error)
+        if (isMounted) {
+          setUser(null)
+          setIsAuthenticated(false)
+          setIsLoading(false)
+        }
+      }
     }
 
     getSession()
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      const sessionUser = session?.user
-      if (sessionUser) {
-        setUser(normalizeUser(sessionUser))
-        setIsAuthenticated(true)
-      } else {
-        setUser(null)
-        setIsAuthenticated(false)
+    const { data: listener } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if (isMounted) {
+        const sessionUser = session?.user
+        if (sessionUser) {
+          setUser(normalizeUser(sessionUser))
+          setIsAuthenticated(true)
+        } else {
+          setUser(null)
+          setIsAuthenticated(false)
+        }
+        // Ensure loading is set to false when auth state changes
+        if (isLoading) {
+          setIsLoading(false)
+        }
       }
     })
 
     return () => {
-      listener.subscription.unsubscribe()
+      isMounted = false
+      if (listener?.subscription) {
+        listener.subscription.unsubscribe()
+      }
     }
   }, [])
 
   // ✅ UPDATE USER PROFILE
   const updateUser = async (updates: any) => {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured || !supabase) {
+      return { success: false, error: "Supabase is not configured" }
+    }
+
+    // Type guard to ensure supabase is not null
+    const supabaseClient = supabase as NonNullable<SupabaseClient>
+
     try {
-      const { data, error } = await supabase.auth.updateUser({
+      const { data, error } = await supabaseClient.auth.updateUser({
         data: {
           full_name: updates.name,
           phone: updates.phone,
@@ -92,6 +135,14 @@ export function useAuth() {
 
   // ✅ UPLOAD PROFILE PICTURE
   const uploadProfilePicture = async (file: File) => {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured || !supabase) {
+      throw new Error("Supabase is not configured")
+    }
+
+    // Type guard to ensure supabase is not null
+    const supabaseClient = supabase as NonNullable<SupabaseClient>
+
     try {
       if (!user) {
         throw new Error('User not authenticated')
@@ -107,7 +158,7 @@ export function useAuth() {
       console.log('Uploading to path:', fileName)
 
       // Upload to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabaseClient.storage
         .from('profiles')
         .upload(fileName, file, {
           cacheControl: '0', // No cache control
@@ -125,14 +176,14 @@ export function useAuth() {
       }
 
       // Get the public URL with timestamp to bust cache
-      const { data: urlData } = supabase.storage
+      const { data: urlData } = supabaseClient.storage
         .from('profiles')
         .getPublicUrl(fileName)
 
       const avatarUrl = `${urlData.publicUrl}?t=${timestamp}`
 
       // Update user metadata with the avatar URL
-      const { data: updateData, error: updateError } = await supabase.auth.updateUser({
+      const { data: updateData, error: updateError } = await supabaseClient.auth.updateUser({
         data: {
           ...user.user_metadata,
           avatar_url: avatarUrl
@@ -157,8 +208,16 @@ export function useAuth() {
   }
   // ✅ UPDATE PASSWORD
   const updatePassword = async (newPassword: string) => {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured || !supabase) {
+      return { success: false, error: "Supabase is not configured" }
+    }
+
+    // Type guard to ensure supabase is not null
+    const supabaseClient = supabase as NonNullable<SupabaseClient>
+
     try {
-      const { data, error } = await supabase.auth.updateUser({
+      const { data, error } = await supabaseClient.auth.updateUser({
         password: newPassword
       })
 
@@ -175,8 +234,16 @@ export function useAuth() {
 
   // ✅ RESET PASSWORD (FORGOT PASSWORD)
   const resetPassword = async (email: string) => {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured || !supabase) {
+      return { success: false, error: "Supabase is not configured" }
+    }
+
+    // Type guard to ensure supabase is not null
+    const supabaseClient = supabase as NonNullable<SupabaseClient>
+
     try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       })
 
@@ -193,8 +260,16 @@ export function useAuth() {
 
   // ✅ VERIFY OTP
   const verifyOtp = async (email: string, token: string) => {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured || !supabase) {
+      return { success: false, error: "Supabase is not configured" }
+    }
+
+    // Type guard to ensure supabase is not null
+    const supabaseClient = supabase as NonNullable<SupabaseClient>
+
     try {
-      const { data, error } = await supabase.auth.verifyOtp({ 
+      const { data, error } = await supabaseClient.auth.verifyOtp({ 
         email, 
         token, 
         type: 'recovery' // For password recovery
@@ -213,7 +288,15 @@ export function useAuth() {
 
   // Signup with default client role
   const signup = async (email: string, password: string, fullName?: string, company?: string) => {
-    const { data, error } = await supabase.auth.signUp({
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured || !supabase) {
+      return { success: false, error: "Supabase is not configured" }
+    }
+
+    // Type guard to ensure supabase is not null
+    const supabaseClient = supabase as NonNullable<SupabaseClient>
+
+    const { data, error } = await supabaseClient.auth.signUp({
       email,
       password,
       options: {
@@ -246,7 +329,15 @@ export function useAuth() {
 
   // Login
   const login = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured || !supabase) {
+      return { success: false, error: "Supabase is not configured" }
+    }
+
+    // Type guard to ensure supabase is not null
+    const supabaseClient = supabase as NonNullable<SupabaseClient>
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password })
 
     if (error) return { success: false, error: error.message }
     if (data.user) setUser(normalizeUser(data.user))
@@ -256,7 +347,17 @@ export function useAuth() {
 
   // Logout
   const logout = async () => {
-    await supabase.auth.signOut()
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured || !supabase) {
+      setUser(null)
+      setIsAuthenticated(false)
+      return
+    }
+
+    // Type guard to ensure supabase is not null
+    const supabaseClient = supabase as NonNullable<SupabaseClient>
+
+    await supabaseClient.auth.signOut()
     setUser(null)
     setIsAuthenticated(false)
   }

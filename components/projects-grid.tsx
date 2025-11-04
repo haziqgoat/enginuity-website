@@ -111,7 +111,9 @@ export function ProjectsGrid() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {filteredProjects.map((project) => (
-              <ProjectCard key={project.id} {...project} onUpdate={refetch} />
+              <div key={project.id} className="group">
+                <ProjectCard {...project} onUpdate={refetch} />
+              </div>
             ))}
           </div>
         )}

@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { Users, Award, Zap, Heart, Plus, Trash2, RefreshCw } from "lucide-react"
 import { CareersHero } from "@/components/careers-hero"
 import { JobCard } from "@/components/job-card"
 import { ApplicationForm } from "@/components/application-form"
 import { AddJobForm } from "@/components/add-job-form"
 import { RoleGuard } from "@/components/role-guard"
-import { AuthRequired } from "@/components/auth-required" // Added import
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -41,24 +41,62 @@ const benefits = [
   },
 ]
 
+// Define job types for filtering
+const JOB_TYPES = [
+  { value: "Full-time", label: "Full-time" },
+  { value: "Part-time", label: "Part-time" },
+  { value: "Contract", label: "Contract" },
+  { value: "Internship", label: "Internship" },
+]
+
 export default function CareersPage() {
-  return (
-    <AuthRequired>
-      <CareersPageContent />
-    </AuthRequired>
-  )
+  // Removed AuthRequired wrapper to allow public access
+  return <CareersPageContent />
 }
 
 function CareersPageContent() {
   const [selectedJob, setSelectedJob] = useState<{ title: string; id: number } | null>(null)
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
   const [showAddJobForm, setShowAddJobForm] = useState(false)
-  const { isStaff, isAdmin } = useAuth()
+  const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
+  const { isAuthenticated, isStaff, isAdmin } = useAuth()
+  const router = useRouter()
   const { jobOpenings, isLoading, addJob, deleteJob, refreshJobs } = useJobOpenings()
 
   const canManageJobs = isStaff() || isAdmin()
 
+  // Filter job openings based on selected job types
+  const filteredJobOpenings = useMemo(() => {
+    if (selectedJobTypes.length === 0) {
+      return jobOpenings
+    }
+    return jobOpenings.filter(job => selectedJobTypes.includes(job.type))
+  }, [jobOpenings, selectedJobTypes])
+
+  // Toggle job type filter
+  const toggleJobTypeFilter = (type: string) => {
+    setSelectedJobTypes(prev => {
+      if (prev.includes(type)) {
+        return prev.filter(t => t !== type)
+      } else {
+        return [...prev, type]
+      }
+    })
+  }
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSelectedJobTypes([])
+  }
+
   const handleApply = (jobTitle: string, jobId: number) => {
-    setSelectedJob({ title: jobTitle, id: jobId })
+    // Check if user is authenticated before allowing application
+    if (isAuthenticated) {
+      setSelectedJob({ title: jobTitle, id: jobId })
+    } else {
+      // Show login prompt for unauthenticated users
+      setShowLoginPrompt(true)
+    }
   }
 
   const handleCloseApplication = () => {
@@ -74,6 +112,15 @@ function CareersPageContent() {
 
   const handleDeleteJob = async (jobId: number) => {
     await deleteJob(jobId)
+  }
+
+  const handleLoginRedirect = () => {
+    setShowLoginPrompt(false)
+    router.push("/login")
+  }
+
+  const handleCancelLogin = () => {
+    setShowLoginPrompt(false)
   }
 
   return (
@@ -112,6 +159,34 @@ function CareersPageContent() {
           <div className="text-center mb-6 md:mb-8">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">Current Openings</h2>
             <p className="text-base md:text-xl text-muted-foreground">Find your perfect role and start your career with us</p>
+          </div>
+          
+          {/* Job Type Filters */}
+          <div className="mb-6">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+              <span className="text-sm md:text-base font-medium">Job Type:</span>
+              {JOB_TYPES.map((jobType) => (
+                <Button
+                  key={jobType.value}
+                  variant={selectedJobTypes.includes(jobType.value) ? "default" : "outline"}
+                  size="sm"
+                  className="text-xs md:text-sm"
+                  onClick={() => toggleJobTypeFilter(jobType.value)}
+                >
+                  {jobType.label}
+                </Button>
+              ))}
+              {selectedJobTypes.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs md:text-sm text-muted-foreground hover:text-foreground"
+                  onClick={clearFilters}
+                >
+                  Clear filters
+                </Button>
+              )}
+            </div>
           </div>
           
           {/* Add Job Button - Top Right Below Header */}
@@ -160,7 +235,7 @@ function CareersPageContent() {
             <>
               {/* Job Listings */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                {jobOpenings.map((job: JobOpening) => (
+                {filteredJobOpenings.map((job: JobOpening) => (
                   <div key={job.id} className="relative group">
                     <JobCard
                       title={job.title}
@@ -176,7 +251,7 @@ function CareersPageContent() {
                     
                     {/* Management Buttons - Only visible to staff and admin */}
                     <RoleGuard requiredRole={UserRole.STAFF} showUnauthorized={false}>
-                      <div className="absolute top-3 right-3 md:top-4 md:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <div className="absolute top-3 right-3 md:top-4 md:right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 sm:opacity-100 sm:translate-y-0 md:opacity-0 md:group-hover:opacity-100 md:translate-y-2 md:group-hover:translate-y-0">
                         <div className="flex gap-1.5 md:gap-2">
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -215,9 +290,22 @@ function CareersPageContent() {
               </div>
               
               {/* No jobs message */}
-              {jobOpenings.length === 0 && (
+              {filteredJobOpenings.length === 0 && (
                 <div className="text-center py-8 md:py-12">
-                  <p className="text-muted-foreground text-base md:text-lg mb-3 md:mb-4">No job openings available at the moment.</p>
+                  <p className="text-muted-foreground text-base md:text-lg mb-3 md:mb-4">
+                    {selectedJobTypes.length > 0 
+                      ? "No job openings match your selected filters." 
+                      : "No job openings available at the moment."}
+                  </p>
+                  {selectedJobTypes.length > 0 && (
+                    <Button 
+                      variant="outline" 
+                      onClick={clearFilters}
+                      className="mb-4"
+                    >
+                      Clear Filters
+                    </Button>
+                  )}
                   <RoleGuard requiredRole={UserRole.STAFF} showUnauthorized={false}>
                     <Button 
                       onClick={() => setShowAddJobForm(true)}
@@ -241,6 +329,34 @@ function CareersPageContent() {
           jobId={selectedJob.id}
           onClose={handleCloseApplication} 
         />
+      )}
+      
+      {/* Login Prompt Modal for Unauthenticated Users */}
+      {showLoginPrompt && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardHeader className="text-center">
+              <CardTitle>Authentication Required</CardTitle>
+              <CardDescription>
+                You need to be logged in to apply for job positions.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <Button 
+                onClick={handleLoginRedirect}
+                className="w-full"
+              >
+                Go to Login
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={handleCancelLogin}
+              >
+                Cancel
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       )}
       
       {/* Add Job Form Modal */}
