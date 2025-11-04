@@ -167,37 +167,9 @@ export default function ProfilePage() {
                     <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
                     <span>Joined {user?.created_at ? new Date(user.created_at).toLocaleDateString() : "Recently"}</span>
                   </div>
-                  {!isAdmin && (
-                    <div className="flex items-center text-muted-foreground">
-                      <Building2 className="h-4 w-4 mr-2 flex-shrink-0" />
-                      <span>Active Projects: 3</span>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
-              {/* Quick Actions Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {!isAdmin && (
-                    <Button variant="outline" className="w-full justify-start" asChild>
-                      <Link href="/projects">
-                        <Building2 className="h-4 w-4 mr-2" />
-                        View My Projects
-                      </Link>
-                    </Button>
-                  )}
-                  <Button variant="outline" className="w-full justify-start" asChild>
-                    <Link href="/contact">
-                      <Shield className="h-4 w-4 mr-2" />
-                      Contact Support
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
             </div>
 
             <div className="md:col-span-2 space-y-6">

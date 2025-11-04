@@ -109,7 +109,14 @@ export function CostPlannerForm() {
   };
 
   const handleReset = () => {
-    form.reset();
+    form.reset({
+      projectGoal: "",
+      projectSize: "",
+      materialsQuality: "",
+      estimatedDuration: "",
+      projectLocation: "",
+      additionalNotes: "",
+    });
     setShowResult(false);
     setEstimateResult(null);
   };
@@ -154,7 +161,7 @@ export function CostPlannerForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project Goal</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select project goal" />
@@ -181,7 +188,7 @@ export function CostPlannerForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project Size</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select project size" />
@@ -208,7 +215,7 @@ export function CostPlannerForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Preferred Materials Quality</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select materials quality" />
@@ -235,7 +242,7 @@ export function CostPlannerForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Estimated Duration</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select estimated duration" />
@@ -303,9 +310,9 @@ export function CostPlannerForm() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => form.reset()}
+                onClick={handleReset}
               >
-                Reset
+                Clear
               </Button>
             </div>
           </form>

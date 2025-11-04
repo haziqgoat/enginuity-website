@@ -147,7 +147,7 @@ export function CostEstimateResult({ estimate, projectDetails, onReset }: CostEs
             </Button>
             <Button onClick={onReset} variant="outline">
               <RotateCcw className="mr-2 h-4 w-4" />
-              New Estimate
+              Clear
             </Button>
           </div>
         </div>

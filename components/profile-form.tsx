@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2, CheckCircle, XCircle, Building2, MapPin, Phone, Briefcase } from "lucide-react"
+import { UserRole } from "@/lib/roles"
 
 interface ProfileFormProps {
   user: any
@@ -35,9 +36,12 @@ interface FormData {
 }
 
 export function ProfileForm({ user, isAdmin = false }: ProfileFormProps) {
-  const { updateUser, updatePassword } = useAuth()
+  const { getUserRole, updateUser, updatePassword } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  const userRole = getUserRole()
+  const isStaff = userRole === UserRole.STAFF
 
   const [formData, setFormData] = useState<FormData>({
     name: user?.user_metadata?.full_name || "",
@@ -213,7 +217,7 @@ export function ProfileForm({ user, isAdmin = false }: ProfileFormProps) {
         </CardContent>
       </Card>
 
-      {!isAdmin && (
+      {!isAdmin && !isStaff && (
         <>
           <Card>
             <CardHeader>

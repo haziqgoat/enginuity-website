@@ -8,9 +8,12 @@ import { Navigation } from '@/components/navigation'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Enginuity',
+  title: 'HNZ Consult Sdn Bhd',
   description: 'HNZ Consult Sdn Bhd - Engineering Solutions and Consultancy Services',
   generator: 'Next.js',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export const viewport = {

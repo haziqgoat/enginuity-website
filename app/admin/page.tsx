@@ -21,7 +21,7 @@ import {
 } from "lucide-react"
 import { UserRole, getRoleDisplayName, getRoleBadgeColor } from "@/lib/roles"
 import { useAuth } from "@/hooks/use-auth"
-import { supabase } from "@/lib/supabaseClient"
+import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient"
 
 import { User as SupabaseUser } from "@supabase/supabase-js"
 
@@ -60,6 +60,11 @@ export default function AdminDashboard() {
     try {
       setIsLoading(true)
       setError("")
+
+      // Check if Supabase is configured
+      if (!isSupabaseConfigured || !supabase) {
+        throw new Error("Supabase is not configured")
+      }
 
       // Get current user's session for authentication
       const { data: { session } } = await supabase.auth.getSession()
@@ -114,6 +119,11 @@ export default function AdminDashboard() {
     try {
       setError("")
       
+      // Check if Supabase is configured
+      if (!isSupabaseConfigured || !supabase) {
+        throw new Error("Supabase is not configured")
+      }
+
       // Get current user's session for authentication
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.access_token) {
@@ -217,16 +227,6 @@ export default function AdminDashboard() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-
-          {/* Setup Notice */}
-          <Alert className="mb-6 border-blue-200 bg-blue-50">
-            <AlertCircle className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-800">
-              <strong>First Time Setup:</strong> If you need to make yourself an admin, visit{" "}
-              <a href="/setup-admin" className="underline font-medium">/setup-admin</a>{" "}
-              to upgrade your account. Delete that page after setup for security.
-            </AlertDescription>
-          </Alert>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
