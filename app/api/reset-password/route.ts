@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
     // Send password reset email with the standard Supabase flow
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'http://localhost:3000'}/reset-password?verified=true&email=${encodeURIComponent(email)}`,
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || 'https://enginuity-website.vercel.app'}/reset-password?verified=true&email=${encodeURIComponent(email)}`,
     })
 
     if (error) {

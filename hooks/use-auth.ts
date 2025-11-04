@@ -244,7 +244,7 @@ export function useAuth() {
 
     try {
       const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://enginuity-website.vercel.app')}/reset-password`,
       })
 
       if (error) {
