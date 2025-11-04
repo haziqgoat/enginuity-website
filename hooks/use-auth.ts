@@ -357,9 +357,47 @@ export function useAuth() {
     // Type guard to ensure supabase is not null
     const supabaseClient = supabase as NonNullable<SupabaseClient>
 
-    await supabaseClient.auth.signOut()
-    setUser(null)
-    setIsAuthenticated(false)
+    try {
+      // Sign out from Supabase - this clears the session
+      const { error } = await supabaseClient.auth.signOut()
+      
+      // Clear local state immediately
+      setUser(null)
+      setIsAuthenticated(false)
+      
+      if (error) {
+        console.error('Logout error:', error)
+      }
+      
+      // Additional cleanup to ensure session is cleared
+      if (typeof window !== 'undefined') {
+        // Clear Supabase auth storage
+        localStorage.removeItem('supabase.auth.token')
+        sessionStorage.removeItem('supabase.auth.token')
+        
+        // Force a small delay then reload to ensure clean state
+        setTimeout(() => {
+          // Clear any cached data
+          window.location.href = '/'
+        }, 100)
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Still clear local state even if there's an error
+      setUser(null)
+      setIsAuthenticated(false)
+      
+      // Additional cleanup on error
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('supabase.auth.token')
+        sessionStorage.removeItem('supabase.auth.token')
+        
+        // Force reload on error as well
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 100)
+      }
+    }
   }
 
   // Role-based helper functions
