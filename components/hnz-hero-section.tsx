@@ -132,7 +132,7 @@ export function HnzHeroSection() {
             <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-blue-500/20 rounded-full mx-auto mb-2 md:mb-3">
               <Award className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
             </div>
-            <div className="text-xl md:text-2xl font-bold text-white">20+</div>
+            <div className="text-xl md:text-2xl font-bold text-white">12+</div>
             <div className="text-xs md:text-sm text-blue-200">Years</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-white/20">

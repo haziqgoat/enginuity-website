@@ -17,7 +17,7 @@ export function AboutHero() {
             <div className="flex items-center justify-center w-16 h-16 bg-primary rounded-full mx-auto mb-4">
               <Building2 className="h-8 w-8 text-primary-foreground" />
             </div>
-            <div className="text-3xl font-bold text-card-foreground">5+</div>
+            <div className="text-3xl font-bold text-card-foreground">12+</div>
             <div className="text-muted-foreground">Years Experience</div>
           </div>
           <div className="text-center">
